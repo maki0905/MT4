@@ -31,6 +31,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
+		Vector3 axis = Normalize({ 1.0f, 1.0f, 1.0f });
+		float angle = 0.44f;
+		Matrix4x4 rotateMatrix = MakeRotateAxisAngle(axis, angle);
+		MatrixScreenPrintf(0, 0, rotateMatrix, "rotateMatrix");
 		///
 		/// ↑更新処理ここまで
 		///
@@ -61,7 +65,7 @@ void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* name)
 	for (int row = 0; row < 4; ++row) {
 		for (int column = 0; column < 4; ++column) {
 			Novice::ScreenPrintf(x, y, "%s", name);
-			Novice::ScreenPrintf(x + column * kColumnWidth, y + row * kRowHeight + 20, "%6.02f", matrix.m[row][column]);
+			Novice::ScreenPrintf(x + column * kColumnWidth, y + row * kRowHeight + 20, "%6.03f", matrix.m[row][column]);
 		}
 	}
 }
