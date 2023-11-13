@@ -94,6 +94,15 @@ Vector3 GetZAxis(const Matrix4x4& m)
 	return Vector3(m.m[2][0], m.m[2][1], m.m[2][2]);
 }
 
+Vector3 Inverse(const Vector3& v)
+{
+	Vector3 result;
+
+	result = Multiply(-1.0f, v);
+
+	return result;
+}
+
 Matrix4x4 Add(const Matrix4x4& m1, const Matrix4x4& m2) {
 	Matrix4x4 result;
 
@@ -506,19 +515,35 @@ Matrix4x4 MakeViewMatrix(const Vector3& rotate, const Vector3& translate)
 Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to)
 {
 	Matrix4x4 result = MakeIdentity4x4();
-	Vector3 n = Normalize(Cross(from, to));
+	Vector3 inverse = Inverse(from);
+	Vector3 axis;
+	if (to.x == inverse.x && to.y == inverse.y && to.z == inverse.z) {
+		axis = { from.y, -from.x, 0.0f };
+	}
+	else {
+		axis = Normalize(Cross(from, to));
+	}
+
+	// 回転角度を計算
 	float cos = Dot(from, to);
 	float sin = Length(Cross(from, to));
-	result.m[0][0] = (n.x * n.x) * (1 - cos) + cos;
-	result.m[0][1] = (n.x * n.y) * (1.0f - cos) + n.z * sin;
-	result.m[0][2] = (n.x * n.z) * (1.0f - cos) - n.y * sin;
-	result.m[1][0] = (n.x * n.y) * (1.0f - cos) - n.z * sin;
-	result.m[1][1] = (n.y * n.y) * (1.0f - cos) + cos;
-	result.m[1][2] = (n.y * n.z) * (1.0f - cos) + n.x * sin;
-	result.m[2][0] = (n.x * n.z) * (1.0f - cos) + n.y * sin;
-	result.m[2][1] = (n.y * n.z) * (1.0f - cos) - n.x * sin;
-	result.m[2][2] = (n.z * n.z) * (1.0f - cos) + cos;
+	float oneMinusCos = 1.0f - cos;
+
+	result.m[0][0] = cos + std::powf(axis.x, 2) * oneMinusCos;
+	result.m[1][0] = axis.x * axis.y * oneMinusCos - axis.z * sin;
+	result.m[2][0] = axis.x * axis.z * oneMinusCos + axis.y * sin;
+
+	result.m[0][1] = axis.y * axis.x * oneMinusCos + axis.z * sin;
+	result.m[1][1] = cos + std::powf(axis.y, 2) * oneMinusCos;
+	result.m[2][1] = axis.y * axis.z * oneMinusCos - axis.x * sin;
+
+	result.m[0][2] = axis.z * axis.x * oneMinusCos - axis.y * sin;
+	result.m[1][2] = axis.z * axis.y * oneMinusCos + axis.x * sin;
+	result.m[2][2] = cos + std::powf(axis.z, 2) * oneMinusCos;
+
 	return result;
+
+
 }
 
 Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle)
