@@ -651,7 +651,7 @@ Quaternion Multiply(const Quaternion& q, const Quaternion& r)
 	Vector3 qxr = Cross({ q.x, q.y, q.z }, { r.x, r.y, r.z });
 	Vector3 rq = Multiply(r.w, { q.x, q.y, q.z });
 	Vector3 qr = Multiply(q.w, { r.x, r.y, r.z });
-	result.w = (q.w * r.w) - Dot({ q.x, q.y, q.z }, { r.x, r.y, r.z });
+	result.w = (q.w * r.w) - Dot(Vector3{ q.x, q.y, q.z }, Vector3{ r.x, r.y, r.z });
 	result.x = qxr.x + rq.x + qr.x;
 	result.y = qxr.y + rq.y + qr.y;
 	result.z = qxr.z + rq.z + qr.z;
@@ -707,6 +707,32 @@ Matrix4x4 MakeRotateMatrix(const Quaternion& q)
 	result.m[2][1] = 2.0f * ((q.y * q.z) - (q.w * q.x));
 	result.m[2][2] = std::powf(q.w, 2) - std::powf(q.x, 2) - std::powf(q.y, 2) + std::powf(q.z, 2);
 
+	return result;
+}
+
+Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
+{
+	Quaternion result;
+	float theta = theta = std::acosf(Dot(q0, q1));
+
+	if (Dot(q0, q1) > 0.0f) {
+		result.w = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.w + (std::sinf(t * theta) / std::sinf(theta)) * q1.w;
+		result.x = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.x + (std::sinf(t * theta) / std::sinf(theta)) * q1.x;
+		result.y = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.y + (std::sinf(t * theta) / std::sinf(theta)) * q1.y;
+		result.z = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.z + (std::sinf(t * theta) / std::sinf(theta)) * q1.z;
+	}
+	else {
+		result.w = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * -q0.w + (std::sinf(t * theta) / std::sinf(theta)) * q1.w;
+		result.x = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * -q0.x + (std::sinf(t * theta) / std::sinf(theta)) * q1.x;
+		result.y = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * -q0.y + (std::sinf(t * theta) / std::sinf(theta)) * q1.y;
+		result.z = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * -q0.z + (std::sinf(t * theta) / std::sinf(theta)) * q1.z;
+	}
+	return result;
+}
+
+float Dot(const Quaternion& q1, const Quaternion& q2)
+{
+	float result = (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z) + (q1.w * q2.w);
 	return result;
 }
 
