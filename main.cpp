@@ -6,6 +6,7 @@ const char kWindowTitle[] = "LE2A_19_マキ_ユキノリ";
 static const int kRowHeight = 20;
 static const int kColumnWidth = 60;
 
+void VectorScreenPrintf(int x, int y, const Vector3& vector, const char* label);
 void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* name);
 void QuaternionScreenPrintf(int x, int y, const Quaternion& q, const char* name);
 
@@ -32,23 +33,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓更新処理ここから
 		///
 
-		Quaternion q1 = { 2.0f, 3.0f, 4.0f, 1.0f };
-		Quaternion q2 = { 1.0f, 3.0f, 5.0f, 2.0f };
-		Quaternion identity = IndentityQuaternion();
-		Quaternion conj = Conjugate(q1);
-		Quaternion inv = Inverse(q1);
-		Quaternion normal = Normalize(q1);
-		Quaternion mul1 = Multiply(q1, q2);
-		Quaternion mul2 = Multiply(q2, q1);
-		float norm = Norm(q1);
+		Quaternion rotation = MakeRotateAxisAngleQuaternion(Normalize(Vector3{ 1.0f, 0.4f, -0.2f }), 0.45f);
+		Vector3 pointY = { 2.1f, -0.9f, 1.3f };
+		Matrix4x4 rotateMatrix = MakeRotateMatrix(rotation);
+		Vector3 rotateByQuaternion = RotateVector(pointY, rotation);
+		Vector3 rotateByMatrix = Transform(pointY, rotateMatrix);
 
-		QuaternionScreenPrintf(0, 0, identity, "Identity");
-		QuaternionScreenPrintf(0, 15, conj, "Conjugate");
-		QuaternionScreenPrintf(0, 30, inv, "Inverse");
-		QuaternionScreenPrintf(0, 45, normal, "Normalize");
-		QuaternionScreenPrintf(0, 60, mul1, "Multiply(q1, q2)");
-		QuaternionScreenPrintf(0, 75, mul2, "Multiply(q2, q1)");
-		Novice::ScreenPrintf(0,90, "%6.02f  : Norm", norm);
+		QuaternionScreenPrintf(0, 0, rotation, "rotation");
+		MatrixScreenPrintf(0, kRowHeight * 1, rotateMatrix, "rotateMatrix");
+		VectorScreenPrintf(0, kRowHeight * 6, rotateByQuaternion, "  :  rotateByQuaternion");
+		VectorScreenPrintf(0, kRowHeight * 7, rotateByMatrix, "  :  rotateByMatrix");
 		///
 		/// ↑更新処理ここまで
 		///
@@ -73,6 +67,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// ライブラリの終了
 	Novice::Finalize();
 	return 0;
+}
+
+void VectorScreenPrintf(int x, int y, const Vector3& vector, const char* label) {
+	Novice::ScreenPrintf(x, y, "%.02f", vector.x);
+	Novice::ScreenPrintf(x + kColumnWidth, y, "%.02f", vector.y);
+	Novice::ScreenPrintf(x + kColumnWidth * 2, y, "%.02f", vector.z);
+	Novice::ScreenPrintf(x + kColumnWidth * 3, y, "%s", label);
 }
 
 void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* name) {

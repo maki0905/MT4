@@ -670,6 +670,46 @@ float Norm(const Quaternion& q)
 	return result;
 }
 
+Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle)
+{
+	Quaternion result;
+	result.w = std::cosf(angle / 2.0f);
+	result.x = axis.x * std::sinf(angle / 2.0f);
+	result.y = axis.y * std::sinf(angle / 2.0f);
+	result.z = axis.z * std::sinf(angle / 2.0f);
+	return result;
+}
+
+Vector3 RotateVector(const Vector3& vector, const Quaternion& q)
+{
+
+	Vector3 result;
+	Quaternion r = { vector.x, vector.y, vector.z, 0.0f };
+	Quaternion conj = Conjugate(q);
+	r = Multiply(Multiply(q, r), conj);
+	result.x = r.x;
+	result.y = r.y;
+	result.z = r.z;
+	return result;
+}
+
+Matrix4x4 MakeRotateMatrix(const Quaternion& q)
+{
+	Matrix4x4 result = MakeIdentity4x4();
+	
+	result.m[0][0] = std::powf(q.w, 2) + std::powf(q.x, 2) - std::powf(q.y, 2) - std::powf(q.z, 2);
+	result.m[0][1] = 2.0f * ((q.x * q.y) + (q.w * q.z));
+	result.m[0][2] = 2.0f * ((q.x * q.z) - (q.w * q.y));
+	result.m[1][0] = 2.0f * ((q.x * q.y) - (q.w * q.z));
+	result.m[1][1] = std::powf(q.w, 2) - std::powf(q.x, 2) + std::powf(q.y, 2) - std::powf(q.z, 2);
+	result.m[1][2] = 2.0f * ((q.y * q.z) + (q.w * q.x));
+	result.m[2][0] = 2.0f * ((q.x * q.z) + (q.w * q.y));
+	result.m[2][1] = 2.0f * ((q.y * q.z) - (q.w * q.x));
+	result.m[2][2] = std::powf(q.w, 2) - std::powf(q.x, 2) - std::powf(q.y, 2) + std::powf(q.z, 2);
+
+	return result;
+}
+
 // 最近接点
 // Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
 //{

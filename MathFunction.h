@@ -109,3 +109,8 @@ Quaternion Multiply(const Quaternion& q, const Quaternion& r);
 
 float Norm(const Quaternion& q);
 
+Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
+
+Vector3 RotateVector(const Vector3& vector, const Quaternion& q);
+
+Matrix4x4 MakeRotateMatrix(const Quaternion& q);
