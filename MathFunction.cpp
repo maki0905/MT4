@@ -611,6 +611,65 @@ Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t) {
 	return v1;
 }
 
+Quaternion IndentityQuaternion()
+{
+	Quaternion result = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+	return result;
+}
+
+Quaternion Conjugate(const Quaternion& q)
+{
+	Quaternion result = { -q.x, -q.y, -q.z, q.w };
+
+	return result;
+}
+
+Quaternion Inverse(const Quaternion& q)
+{
+	Quaternion result;
+	Quaternion conj = Conjugate(q);
+	float norm = Norm(q);
+	norm = std::powf(norm, 2);
+	result = { conj.x / norm, conj.y / norm, conj.z / norm, conj.w / norm };
+
+	return result;
+}
+
+Quaternion Normalize(const Quaternion& q)
+{
+	Quaternion result;
+	float norm = Norm(q);
+	result = { q.x / norm, q.y / norm, q.z / norm, q.w / norm };
+
+	return result;
+}
+
+Quaternion Multiply(const Quaternion& q, const Quaternion& r)
+{
+	Quaternion result;
+	Vector3 qxr = Cross({ q.x, q.y, q.z }, { r.x, r.y, r.z });
+	Vector3 rq = Multiply(r.w, { q.x, q.y, q.z });
+	Vector3 qr = Multiply(q.w, { r.x, r.y, r.z });
+	result.w = (q.w * r.w) - Dot({ q.x, q.y, q.z }, { r.x, r.y, r.z });
+	result.x = qxr.x + rq.x + qr.x;
+	result.y = qxr.y + rq.y + qr.y;
+	result.z = qxr.z + rq.z + qr.z;
+
+	return result;
+}
+
+float Norm(const Quaternion& q)
+{
+	float result;
+	float w2 = std::powf(q.w, 2);
+	float x2 = std::powf(q.x, 2);
+	float y2 = std::powf(q.y, 2);
+	float z2 = std::powf(q.z, 2);
+	result = sqrtf(w2 + x2 + y2 + z2);
+	return result;
+}
+
 // 最近接点
 // Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
 //{

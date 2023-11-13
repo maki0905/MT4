@@ -5,6 +5,7 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Matrix4x4.h"
+#include "Quaternion.h"
 
 // ベクトルの加法
 Vector3 Add(const Vector3& v1, const Vector3& v2);
@@ -95,5 +96,16 @@ float LerpShortAngle(float a, float b, float t);
 Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t);
 Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t);
 
+// 乗法単位元
+Quaternion IndentityQuaternion();
 
+Quaternion Conjugate(const Quaternion& q);
+
+Quaternion Inverse(const Quaternion& q);
+
+Quaternion Normalize(const Quaternion& q);
+
+Quaternion Multiply(const Quaternion& q, const Quaternion& r);
+
+float Norm(const Quaternion& q);
 
