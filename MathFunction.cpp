@@ -713,19 +713,22 @@ Matrix4x4 MakeRotateMatrix(const Quaternion& q)
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
 {
 	Quaternion result;
-	float theta = theta = std::acosf(Dot(q0, q1));
-
-	if (Dot(q0, q1) > 0.0f) {
-		result.w = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.w + (std::sinf(t * theta) / std::sinf(theta)) * q1.w;
-		result.x = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.x + (std::sinf(t * theta) / std::sinf(theta)) * q1.x;
-		result.y = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.y + (std::sinf(t * theta) / std::sinf(theta)) * q1.y;
-		result.z = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.z + (std::sinf(t * theta) / std::sinf(theta)) * q1.z;
-	}
-	else {
+	float dot = Dot(q0, q1);
+	float theta = 0.0f;
+	if (dot < 0) {
+		dot = -dot;
+		theta = std::acosf(dot);
 		result.w = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * -q0.w + (std::sinf(t * theta) / std::sinf(theta)) * q1.w;
 		result.x = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * -q0.x + (std::sinf(t * theta) / std::sinf(theta)) * q1.x;
 		result.y = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * -q0.y + (std::sinf(t * theta) / std::sinf(theta)) * q1.y;
 		result.z = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * -q0.z + (std::sinf(t * theta) / std::sinf(theta)) * q1.z;
+	}
+	else {
+		theta = std::acosf(dot);
+		result.w = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.w + (std::sinf(t * theta) / std::sinf(theta)) * q1.w;
+		result.x = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.x + (std::sinf(t * theta) / std::sinf(theta)) * q1.x;
+		result.y = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.y + (std::sinf(t * theta) / std::sinf(theta)) * q1.y;
+		result.z = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.z + (std::sinf(t * theta) / std::sinf(theta)) * q1.z;
 	}
 	return result;
 }
