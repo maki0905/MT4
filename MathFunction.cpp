@@ -640,7 +640,9 @@ Quaternion Normalize(const Quaternion& q)
 {
 	Quaternion result;
 	float norm = Norm(q);
-	result = { q.x / norm, q.y / norm, q.z / norm, q.w / norm };
+	if (norm != 0.0f) {
+		result = { q.x / norm, q.y / norm, q.z / norm, q.w / norm };
+	}
 
 	return result;
 }
@@ -673,10 +675,11 @@ float Norm(const Quaternion& q)
 Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle)
 {
 	Quaternion result;
+	float sin = std::sinf(angle / 2.0f);
 	result.w = std::cosf(angle / 2.0f);
-	result.x = axis.x * std::sinf(angle / 2.0f);
-	result.y = axis.y * std::sinf(angle / 2.0f);
-	result.z = axis.z * std::sinf(angle / 2.0f);
+	result.x = axis.x * sin;
+	result.y = axis.y * sin;
+	result.z = axis.z * sin;
 	return result;
 }
 
@@ -700,9 +703,11 @@ Matrix4x4 MakeRotateMatrix(const Quaternion& q)
 	result.m[0][0] = std::powf(q.w, 2) + std::powf(q.x, 2) - std::powf(q.y, 2) - std::powf(q.z, 2);
 	result.m[0][1] = 2.0f * ((q.x * q.y) + (q.w * q.z));
 	result.m[0][2] = 2.0f * ((q.x * q.z) - (q.w * q.y));
+	
 	result.m[1][0] = 2.0f * ((q.x * q.y) - (q.w * q.z));
 	result.m[1][1] = std::powf(q.w, 2) - std::powf(q.x, 2) + std::powf(q.y, 2) - std::powf(q.z, 2);
 	result.m[1][2] = 2.0f * ((q.y * q.z) + (q.w * q.x));
+	
 	result.m[2][0] = 2.0f * ((q.x * q.z) + (q.w * q.y));
 	result.m[2][1] = 2.0f * ((q.y * q.z) - (q.w * q.x));
 	result.m[2][2] = std::powf(q.w, 2) - std::powf(q.x, 2) - std::powf(q.y, 2) + std::powf(q.z, 2);
