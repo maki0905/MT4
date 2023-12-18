@@ -41,6 +41,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Quaternion interpolate2 = Slerp(rotation0, rotation1, 0.5f);
 		Quaternion interpolate3 = Slerp(rotation0, rotation1, 0.7f);
 		Quaternion interpolate4 = Slerp(rotation0, rotation1, 1.0f);
+
 		QuaternionScreenPrintf(0, 0, interpolate0, "interpolate0, Slerp(q0, q1, 0.0f)");
 		QuaternionScreenPrintf(0, 15, interpolate1, "interpolate1, Slerp(q0, q1, 0.3f)");
 		QuaternionScreenPrintf(0, 30, interpolate2, "interpolate2, Slerp(q0, q1, 0.5f)");
