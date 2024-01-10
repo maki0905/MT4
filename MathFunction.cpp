@@ -738,6 +738,7 @@ Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
 	}
 	return result;*/
 
+
 	Quaternion result;
 	const float EPSILON = 0.0005f;
 	float dot = Dot(q0, q1);
