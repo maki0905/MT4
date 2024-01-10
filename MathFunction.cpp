@@ -4,6 +4,7 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <ranges>
 
 // ベクトルの加法
 Vector3 Add(const Vector3& v1, const Vector3& v2) {
@@ -717,7 +718,7 @@ Matrix4x4 MakeRotateMatrix(const Quaternion& q)
 
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
 {
-	Quaternion result;
+	/*Quaternion result;
 	float dot = Dot(q0, q1);
 	float theta = 0.0f;
 	if (dot < 0) {
@@ -735,7 +736,51 @@ Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
 		result.y = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.y + (std::sinf(t * theta) / std::sinf(theta)) * q1.y;
 		result.z = (std::sinf((1.0f - t) * theta) / std::sinf(theta)) * q0.z + (std::sinf(t * theta) / std::sinf(theta)) * q1.z;
 	}
+	return result;*/
+
+	Quaternion result;
+	const float EPSILON = 0.0005f;
+	float dot = Dot(q0, q1);
+	float theta = 0.0f;
+	float sin0 = 0.0f;
+	float sin1 = 0.0f;
+
+	if (dot >= 1.0f - EPSILON) {
+		result.w = (1.0f - t) * q0.w + t * q1.w;
+		result.x = (1.0f - t) * q0.x + t * q1.x;
+		result.y = (1.0f - t) * q0.y + t * q1.y;
+		result.z = (1.0f - t) * q0.z + t * q1.z;
+		return result;
+	}
+	else if (dot <= -1.0f + EPSILON) {
+		result.w = (1.0f - t) * -q0.w + t * q1.w;
+		result.x = (1.0f - t) * -q0.x + t * q1.x;
+		result.y = (1.0f - t) * -q0.y + t * q1.y;
+		result.z = (1.0f - t) * -q0.z + t * q1.z;
+		return result;
+	}
+
+	if (dot < 0.0f) {
+		dot = -dot;
+		theta = std::acosf(dot);
+		sin0 = std::sinf((1.0f - t) * theta) / std::sinf(theta);
+		sin1 = std::sinf(t * theta) / std::sinf(theta);
+		result.w = sin0 * -q0.w + sin1 * q1.w;
+		result.x = sin0 * -q0.x + sin1 * q1.x;
+		result.y = sin0 * -q0.y + sin1 * q1.y;
+		result.z = sin0 * -q0.z + sin1 * q1.z;
+	}
+	else {
+		theta = std::acosf(dot);
+		sin0 = std::sinf((1.0f - t) * theta) / std::sinf(theta);
+		sin1 = std::sinf(t * theta) / std::sinf(theta);
+		result.w = sin0 * q0.w + sin1 * q1.w;
+		result.x = sin0 * q0.x + sin1 * q1.x;
+		result.y = sin0 * q0.y + sin1 * q1.y;
+		result.z = sin0 * q0.z + sin1 * q1.z;
+	}
 	return result;
+
 }
 
 float Dot(const Quaternion& q1, const Quaternion& q2)
